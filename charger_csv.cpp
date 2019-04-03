@@ -2,7 +2,6 @@
 /*
 	charger_csv.cpp
 */
-
 #include "charger_csv.h"
 
 CVString split (const string &, const char &);
