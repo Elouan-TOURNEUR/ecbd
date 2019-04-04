@@ -4,10 +4,10 @@ MaFenetre::MaFenetre(QWidget *parent) : QMainWindow(parent)
 {
     this->setWindowTitle("CLASSIFICATION DES PATIENTS - PREDICTION");
 
-    setFixedSize(1600,800);
+    setFixedSize(1400,800);
 
     m_bou = new QPushButton("Quitter", this);
-    m_bou->setGeometry(1400,700,80,40);
+    m_bou->setGeometry(1000,700,80,40);
 
     m_pred = new QPushButton("Prédire", this);
     m_pred->setGeometry(200, 300, 80, 40);
@@ -36,14 +36,14 @@ MaFenetre::MaFenetre(QWidget *parent) : QMainWindow(parent)
     m_lab3 = new QLabel("Toux", this);
     m_lab3->setGeometry(470, 150, 100, 30);
 
-    m_com = new QComboBox(this);
-    m_com->setGeometry(230,180,100,30);
+    boxFievre = new QComboBox(this);
+    boxFievre->setGeometry(230,180,100,30);
 
-    m_com1 = new QComboBox(this);
-    m_com1->setGeometry(350,180,100,30);
+    boxDouleur = new QComboBox(this);
+    boxDouleur->setGeometry(350,180,100,30);
 
-    m_com2 = new QComboBox(this);
-    m_com2->setGeometry(470,180,100,30);
+    boxToux = new QComboBox(this);
+    boxToux->setGeometry(470,180,100,30);
 
     m_tra = new QLabel(this);
     m_tra->setFont(QFont("Arial", 12, QFont::Bold, true));
@@ -79,22 +79,22 @@ MaFenetre::MaFenetre(QWidget *parent) : QMainWindow(parent)
         }
     }
 
-    m_com1->addItem("NULL");
+    boxDouleur->addItem("NULL");
     for (const std::string& valeur : valeursDouleur)
-        m_com1->addItem(valeur.c_str());
+        boxDouleur->addItem(valeur.c_str());
 
-    m_com->addItem("NULL");
+    boxFievre->addItem("NULL");
     for (const std::string& valeur : valeursFievre)
-        m_com->addItem(valeur.c_str());
+        boxFievre->addItem(valeur.c_str());
 
-    m_com2->addItem("NULL");
+    boxToux->addItem("NULL");
     for (const std::string& valeur : valeursToux)
-        m_com2->addItem(valeur.c_str());
+        boxToux->addItem(valeur.c_str());
 
 
     table = new QTableWidget(this) ;
-    table->setGeometry(300,380,650,350) ;
-    table->setRowCount(m_mat.size()+1) ;
+    table->setGeometry(300,380,550,350) ;
+    table->setRowCount(m_mat.size()+5) ;
     table->setColumnCount(m_vet.size()+1);
 
     //    unsigned compteur = 0 ;
@@ -162,7 +162,7 @@ void MaFenetre::setQuitter()
 {
     exit(0);
 }
-
+int compteur = 10 ;
 void MaFenetre::setPredire()
 {
     string maladieResult;
@@ -176,35 +176,35 @@ void MaFenetre::setPredire()
         {
             if(m_mat[i][3] == maladie)
             {
-                if(m_mat[i][0]==m_com->currentText().toStdString())
+                if(m_mat[i][0]==boxFievre->currentText().toStdString())
                     conf1 += 1.0;
 
-                if(m_mat[i][1]==m_com1->currentText().toStdString())
+                if(m_mat[i][1]==boxDouleur->currentText().toStdString())
                     conf2 += 1.0;
 
-                if(m_mat[i][2]==m_com2->currentText().toStdString())
+                if(m_mat[i][2]==boxToux->currentText().toStdString())
                     conf3 += 1.0;
             }
         }
 
         double freq = m_freqMaladie[maladie] * m_mat.size();
 
-        if (m_com->currentText().toStdString() == "NULL")
+        if (boxFievre->currentText().toStdString() == "NULL")
             conf1 = 1;
         else
             conf1 /= freq;
 
-        if (m_com1->currentText().toStdString() == "NULL")
+        if (boxDouleur->currentText().toStdString() == "NULL")
             conf2 = 1;
         else
             conf2 /= freq;
 
-        if (m_com2->currentText().toStdString() == "NULL")
+        if (boxToux->currentText().toStdString() == "NULL")
             conf3 = 1;
         else
             conf3 /= freq;
 
-        if (m_com->currentText().toStdString() == "NULL" && m_com1->currentText().toStdString() == "NULL" && m_com2->currentText().toStdString() == "NULL")
+        if (boxFievre->currentText().toStdString() == "NULL" && boxDouleur->currentText().toStdString() == "NULL" && boxToux->currentText().toStdString() == "NULL")
         {
             maladieResult = "Impossible de trouver la maladie";
             break;
@@ -215,9 +215,30 @@ void MaFenetre::setPredire()
             maladieResult = maladie;
             score = m_freqMaladie[maladie] * conf1 * conf2 * conf3;
         }
+        if (score == 0.0)
+        {
+            maladieResult = "Pas assez de données" ;
+        }
     }
 
     m_tra->setText(maladieResult.c_str());
     m_tra->adjustSize();
     m_tra->setVisible(true);
+
+
+
+    QTableWidgetItem *prenom = new QTableWidgetItem(m_prenom->text()) ;
+    table->setItem(compteur,0,prenom) ;
+    QTableWidgetItem *fievre = new QTableWidgetItem(boxFievre->currentText()) ;
+    table->setItem(compteur,1,fievre) ;
+    QTableWidgetItem *douleur = new QTableWidgetItem(boxDouleur->currentText()) ;
+    table->setItem(compteur,2,douleur) ;
+    QTableWidgetItem *toux = new QTableWidgetItem(boxToux->currentText()) ;
+    table->setItem(compteur,3,toux) ;
+    QTableWidgetItem *maladie = new QTableWidgetItem(maladieResult.c_str()) ;
+    table->setItem(compteur,4,maladie) ;
+
+
+
+    compteur ++ ;
 }

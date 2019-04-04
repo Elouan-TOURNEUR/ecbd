@@ -44,9 +44,9 @@ private :
     QLabel* m_lab3;
     QLabel* m_maladie;
 
-    QComboBox *m_com;
-    QComboBox* m_com1;
-    QComboBox* m_com2;
+    QComboBox* boxFievre;
+    QComboBox* boxDouleur;
+    QComboBox* boxToux;
 
     QTableWidget *table;
     CVString m_vet;
